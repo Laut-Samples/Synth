@@ -179,9 +179,11 @@ void LAUTEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
 
     auto chainSettings = getChainSettings (apvts);
 
+    //Peak
+    
     updatePeakFilter(chainSettings);
     
-
+// LOWCUT
  
     
     auto cutCoefficients = juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq, getSampleRate(), 2 * (chainSettings.lowCutSlope +1));
@@ -196,7 +198,7 @@ void LAUTEQAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
     
     updateCutFilter(rightLowCut, cutCoefficients, chainSettings.lowCutSlope);
     
-//   
+//   BUFFER
     
     
     juce::dsp::AudioBlock<float> block(buffer);
