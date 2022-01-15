@@ -14,11 +14,11 @@
 //==============================================================================
 /**
 */
-class LAUTEQAudioProcessorEditor  : public juce::AudioProcessorEditor
+class SynthAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    LAUTEQAudioProcessorEditor (LAUTEQAudioProcessor&);
-    ~LAUTEQAudioProcessorEditor() override;
+    SynthAudioProcessorEditor (SynthAudioProcessor&);
+    ~SynthAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -27,7 +27,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    LAUTEQAudioProcessor& audioProcessor;
+    SynthAudioProcessor& audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LAUTEQAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SynthAudioProcessorEditor)
 };
