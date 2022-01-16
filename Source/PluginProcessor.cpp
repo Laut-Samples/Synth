@@ -19,7 +19,7 @@ SynthAudioProcessor::SynthAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), apvts (*this, nullptr, "Parameters", createParams())
 #endif
 {
     synth.addSound (new SynthSound());
@@ -139,6 +139,8 @@ bool SynthAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 }
 #endif
 
+// MAIN PROCESS BLOCK AUDIOBUFFER
+
 void SynthAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -191,9 +193,38 @@ void SynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes
 
 //==============================================================================
 // This creates new instances of the plugin..
+
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SynthAudioProcessor();
 }
 
 // Value Tree
+
+juce::AudioProcessorValueTreeState::ParameterLayout SynthAudioProcessor::createParams()
+{
+    // Combobox: switch Oscillators
+    // Attack - float
+    // Decay - float
+    // Sustain - float
+    // Release - float
+    
+    
+        // Combobox: switch Oscillators
+    
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> params;
+    
+    params.push_back (std::make_unique<juce::AudioParameterChoice> ("OSC", "Oscillator", juce::StringArray { " Sine", "Saw", "Square"}, 0));
+    
+    
+    // Attack Decay release
+    
+    params.push_back (std::make_unique<juce::AudioParameterFloat>("ATTACK", "Attack", juce::NormalisableRange<float> { 0.1f, 1.0f, } , 0.1f ));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>("DECAY", "Decay", juce::NormalisableRange<float> { 0.1f, 1.0f, } , 0.1f ));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>("SUSTAIN", "Sustain", juce::NormalisableRange<float> { 0.1f, 1.0f, } , 0.1f ));
+    params.push_back (std::make_unique<juce::AudioParameterFloat>("RELEASE", "Release", juce::NormalisableRange<float> { 0.1f, 3.0f, } , 0.4f ));
+    
+    
+    
+    return { params.begin(), params.end() };
+}

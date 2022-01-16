@@ -25,6 +25,9 @@ void SynthVoice::startNote (int midiNoteNumber, float velocity, juce::Synthesise
 void SynthVoice::stopNote (float velocity, bool allowTailOff)
 {
     adsr.noteOff();
+    
+    if (! allowTailOff || ! adsr.isActive())
+        clearCurrentNote();
 }
 void SynthVoice::controllerMoved (int controllerNumber, int newControllerValue)
 {
@@ -52,7 +55,16 @@ void SynthVoice::prepareToPlay(double sampleRate, int samplesPerBlock, int outpu
     osc.setFrequency(220.0f);
     gain.setGainLinear (0.01f);
     
+    adsParams.attack = 0.8f;
+    adsParams.decay = 0.8f;
+    adsParams.sustain = 1.5f;
+    adsParams.release = 1.5f;
+    
+    adsr.setParameters (adsParams);
+    
+    
     isPrepared = true;
+    
     
 }
 
@@ -60,13 +72,31 @@ void SynthVoice::renderNextBlock (juce::AudioBuffer< float > &outputBuffer, int 
 {
     jassert (isPrepared);
     
-    juce::dsp::AudioBlock<float> audioBlock { outputBuffer } ;
+    if (! isVoiceActive())
+        return;
+    // Buffer
+    
+    synthBuffer.setSize (outputBuffer.getNumChannels(), numSamples, false, false, true);
+    synthBuffer.clear();
+    
+    
+    juce::dsp::AudioBlock<float> audioBlock { synthBuffer } ;
+    
+    // OSC
+    
     osc.process(juce::dsp::ProcessContextReplacing<float> (audioBlock));
     gain.process(juce::dsp::ProcessContextReplacing<float> (audioBlock));
     
-    adsr.applyEnvelopeToBuffer(outputBuffer, startsample, numSamples);
+    // ADSR
     
+    adsr.applyEnvelopeToBuffer(synthBuffer, 0, synthBuffer.getNumChannels());
     
-    
+    for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
+    {
+        outputBuffer.addFrom (channel, startsample, synthBuffer, channel, 0, numSamples);
+        
+        if(! adsr.isActive())
+            clearCurrentNote();
+    }
     
 }

@@ -28,11 +28,20 @@ public:
     
 
 private:
+    // BUFFER
+    
+    juce::AudioBuffer<float> synthBuffer;
+    
+    // ADSR
+    
     juce::ADSR adsr;
     juce::ADSR::Parameters adsParams;
 
-    //    juce::dsp::Oscillator<float> osc { [](float x) {return std::sin (x); }};
-    juce::dsp::Oscillator<float> osc { [](float x) {return x / juce::MathConstants<float>::pi; }};
+    // OSC TYPES
+    
+    juce::dsp::Oscillator<float> osc { [](float x) {return std::sin (x); }};
+//    juce::dsp::Oscillator<float> osc { [](float x) {return x / juce::MathConstants<float>::pi; }};
+    
     juce::dsp::Gain<float> gain;
     bool isPrepared { false };
     
