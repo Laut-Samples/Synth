@@ -11,23 +11,20 @@
 
 //==============================================================================
 SynthAudioProcessorEditor::SynthAudioProcessorEditor (SynthAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), audioProcessor (p), adsr (audioProcessor.apvts)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 300);
     
     // SLIDER
-    using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-    
-    attackAttachment = std::make_unique<SliderAttachment>(audioProcessor.apvts, "ATTACK", attackSlider);
-    decayAttachment = std::make_unique<SliderAttachment>(audioProcessor.apvts, "DECAY", decaySlider);
-    sustainAttachment = std::make_unique<SliderAttachment>(audioProcessor.apvts, "SUSTAIN", sustainSlider);
-    releaseAttachment = std::make_unique<SliderAttachment>(audioProcessor.apvts, "RELEASE", releaseSlider);
+
+    addAndMakeVisible(adsr);
     
     // COMBOBOX
     
     oscSelAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(audioProcessor.apvts, "OSC", oscSelector);
+    
     
 }
 
@@ -38,16 +35,13 @@ SynthAudioProcessorEditor::~SynthAudioProcessorEditor()
 //==============================================================================
 void SynthAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    
+    g.fillAll(juce::Colours::black);
 }
 
 void SynthAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    
+    adsr.setBounds (getWidth() / 2, 0, getWidth() / 2, getHeight());
 }
+
